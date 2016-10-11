@@ -1,10 +1,10 @@
-defmodule Mix.Tasks.Apartmentex.Gen.Migration do
+defmodule Mix.Tasks.Tenantex.Gen.Migration do
   use Mix.Task
 
   import Macro, only: [camelize: 1, underscore: 1]
   import Mix.Generator
   import Mix.Ecto
-  import Apartmentex.MigrationsPathBuilder
+  import Tenantex.MigrationsPathBuilder
 
   @shortdoc "Generates a new migration for the tenants"
 
@@ -16,8 +16,8 @@ defmodule Mix.Tasks.Apartmentex.Gen.Migration do
 
   ## Examples
 
-      mix apartmentex.gen.migration add_posts_table
-      mix apartmentex.gen.migration add_posts_table -r Custom.Repo
+      mix tenantex.gen.migration add_posts_table
+      mix tenantex.gen.migration add_posts_table -r Custom.Repo
 
   By default, the migration will be generated to the
   "priv/YOUR_REPO/tenant_migrations" directory of the current application
@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Apartmentex.Gen.Migration do
 
   @doc false
   def run(args) do
-    no_umbrella!("apartmentex.gen.migration")
+    no_umbrella!("tenantex.gen.migration")
     repos = parse_repo(args)
 
     Enum.each repos, fn repo ->
@@ -49,7 +49,7 @@ defmodule Mix.Tasks.Apartmentex.Gen.Migration do
                      change: opts[:change]]
           create_file file, migration_template(assigns)
         {_, _, _} ->
-          Mix.raise "expected apartmentex.gen.migration to receive the migration file name, " <>
+          Mix.raise "expected tenantex.gen.migration to receive the migration file name, " <>
                     "got: #{inspect Enum.join(args, " ")}"
       end
     end

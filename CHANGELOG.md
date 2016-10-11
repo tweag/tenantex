@@ -1,6 +1,6 @@
 # Changelog
 
-The noteworthy changes for each Apartmentex version are included here. For a
+The noteworthy changes for each Tenantex version are included here. For a
 complete changelog, see the git history for each version via the version links.
 
 **To see the dates a version was published see the [hex package page].**
@@ -11,7 +11,7 @@ complete changelog, see the git history for each version via the version links.
 
 ### Changed
 
-- `Apartmentex.migrate_tenant` function added to migrate a single tenant up or down.
+- `Tenantex.migrate_tenant` function added to migrate a single tenant up or down.
 
 [Since 0.2.0]: https://github.com/Dania02525/apartmentex/compare/v0.2.0...master
 
@@ -19,7 +19,7 @@ complete changelog, see the git history for each version via the version links.
 
 ### Changed
 
-- `Apartmentex.Migration` removed - should `use Ecto.Migration` in tenant
+- `Tenantex.Migration` removed - should `use Ecto.Migration` in tenant
   migrations now
 - Now supports (and requires) Ecto 2.0.x
 

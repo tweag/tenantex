@@ -1,8 +1,8 @@
-defmodule Apartmentex.Repo do
+defmodule Tenantex.Repo do
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       @behaviour Ecto.Repo
-      alias Apartmentex.TenantMissingError
+      alias Tenantex.TenantMissingError
 
       @repo Keyword.fetch!(opts, :repo)
       @untenanted [Ecto.Migration.SchemaMigration] ++ Keyword.get(opts, :untenanted, [])

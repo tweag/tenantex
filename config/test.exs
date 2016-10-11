@@ -1,12 +1,12 @@
 use Mix.Config
 
-config :apartmentex, Apartmentex.TestPostgresRepo,
+config :tenantex, Tenantex.TestPostgresRepo,
   hostname: "localhost",
-  database: "apartmentex_test",
+  database: "tenantex_test",
   adapter: Ecto.Adapters.Postgres,
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :apartmentex, Ecto.TestRepo,
+config :tenantex, Ecto.TestRepo,
   url: "ecto://user:pass@local/hello"
 
 

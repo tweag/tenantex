@@ -1,19 +1,19 @@
-defmodule Apartmentex.Test.UntenantedRepo do
-  use Apartmentex.Repo, repo: Ecto.TestRepo, untenanted: [Apartmentex.Note]
+defmodule Tenantex.Test.UntenantedRepo do
+  use Tenantex.Repo, repo: Ecto.TestRepo, untenanted: [Tenantex.Note]
 end
 
-defmodule Apartmentex.Test.TenantedRepo do
-  use Apartmentex.Repo, repo: Ecto.TestRepo
+defmodule Tenantex.Test.TenantedRepo do
+  use Tenantex.Repo, repo: Ecto.TestRepo
 end
 
-defmodule Apartmentex.ApartmentexTest do
+defmodule Tenantex.TenantexTest do
   use ExUnit.Case
-  import Apartmentex.RepoAdditions
-  alias Apartmentex.{Note,TenantMissingError}
-  alias Apartmentex.Test.{TenantedRepo,UntenantedRepo}
+  import Tenantex.RepoAdditions
+  alias Tenantex.{Note,TenantMissingError}
+  alias Tenantex.Test.{TenantedRepo,UntenantedRepo}
 
   @tenant_id 2
-  @error_message "No tenant specified in Elixir.Apartmentex.Note"
+  @error_message "No tenant specified in Elixir.Tenantex.Note"
 
   def scoped_note_query do
     Note

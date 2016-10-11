@@ -1,5 +1,5 @@
-defmodule Apartmentex.PrefixBuilder do
-  @schema_prefix Application.get_env(:apartmentex, :schema_prefix) || "tenant_"
+defmodule Tenantex.PrefixBuilder do
+  @schema_prefix Application.get_env(:tenantex, :schema_prefix) || "tenant_"
 
   def build_prefix(tenant) when is_integer(tenant) do
     @schema_prefix <> Integer.to_string(tenant)

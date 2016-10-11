@@ -1,6 +1,6 @@
-defmodule Apartmentex.TenantActions do
-  import Apartmentex.MigrationsPathBuilder
-  import Apartmentex.PrefixBuilder
+defmodule Tenantex.TenantActions do
+  import Tenantex.MigrationsPathBuilder
+  import Tenantex.PrefixBuilder
 
   @doc """
   Apply migrations to a tenant with given strategy, in given direction.

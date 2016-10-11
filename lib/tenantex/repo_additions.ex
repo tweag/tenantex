@@ -1,6 +1,6 @@
-defmodule Apartmentex.RepoAdditions do
+defmodule Tenantex.RepoAdditions do
   alias Ecto.Changeset
-  import Apartmentex.PrefixBuilder
+  import Tenantex.PrefixBuilder
 
   def set_tenant(%Changeset{} = changeset, tenant) do
     %{changeset | data: set_tenant(changeset.data, tenant)}

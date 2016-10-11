@@ -12,7 +12,7 @@ defmodule Ecto.TestAdapter do
   end
 
   def child_spec(_repo, opts) do
-    :apartmentex   = opts[:otp_app]
+    :tenantex   = opts[:otp_app]
     "user"  = opts[:username]
     "pass"  = opts[:password]
     "hello" = opts[:database]
@@ -120,7 +120,7 @@ end
 Application.put_env(:ecto, Ecto.TestRepo, [user: "invalid"])
 
 defmodule Ecto.TestRepo do
-  use Ecto.Repo, otp_app: :apartmentex, adapter: Ecto.TestAdapter
+  use Ecto.Repo, otp_app: :tenantex, adapter: Ecto.TestAdapter
 end
 
 Ecto.TestRepo.start_link(url: "ecto://user:pass@local/hello")
