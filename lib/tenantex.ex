@@ -1,4 +1,8 @@
 defmodule Tenantex do
+  defmodule TenantMissingError do
+    defexception message: "No tenant specified"
+  end
+
   defdelegate drop_tenant(repo, tenant), to: Tenantex.TenantActions
   defdelegate migrate_tenant(repo, tenant, direction \\ :up, opts \\ []), to: Tenantex.TenantActions
   defdelegate new_tenant(repo, tenant), to: Tenantex.TenantActions

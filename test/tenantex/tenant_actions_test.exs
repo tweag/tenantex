@@ -1,12 +1,13 @@
 defmodule Tenantex.TenantActionsTest do
   use ExUnit.Case
-  import Tenantex.RepoAdditions
+
+  import Tenantex.Queryable
   alias Tenantex.Note
-  alias Tenantex.TestTenantRepo
+  alias Tenantex.TestPostgresRepo
 
   @migration_version 20160711125401
   @wrong_migration_version 20160711125402
-  @repo TestTenantRepo
+  @repo TestPostgresRepo
   @tenant_id 2
 
   setup do
