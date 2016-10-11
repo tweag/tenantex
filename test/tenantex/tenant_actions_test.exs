@@ -1,8 +1,9 @@
-defmodule Apartmentex.TenantActionsTest do
+defmodule Tenantex.TenantActionsTest do
   use ExUnit.Case
 
-  alias Apartmentex.Note
-  alias Apartmentex.TestPostgresRepo
+  import Tenantex.Queryable
+  alias Tenantex.Note
+  alias Tenantex.TestPostgresRepo
 
   @migration_version 20160711125401
   @wrong_migration_version 20160711125402
@@ -17,7 +18,7 @@ defmodule Apartmentex.TenantActionsTest do
     create_tenant_schema
 
     assert_creates_notes_table fn ->
-      {status, prefix, versions} = Apartmentex.migrate_tenant(@repo, @tenant_id)
+      {status, prefix, versions} = Tenantex.migrate_tenant(@repo, @tenant_id)
 
       assert status == :ok
       assert prefix == "tenant_#{@tenant_id}"
@@ -29,7 +30,7 @@ defmodule Apartmentex.TenantActionsTest do
     create_and_migrate_tenant
 
     force_migration_failure fn(expected_postgres_error) ->
-      {status, prefix, error_message} = Apartmentex.migrate_tenant(@repo, @tenant_id)
+      {status, prefix, error_message} = Tenantex.migrate_tenant(@repo, @tenant_id)
 
       assert status == :error
       assert prefix == "tenant_#{@tenant_id}"
@@ -42,7 +43,7 @@ defmodule Apartmentex.TenantActionsTest do
 
     assert_drops_notes_table fn ->
       {status, prefix, versions} =
-        Apartmentex.migrate_tenant(@repo, @tenant_id, :down, to: @migration_version)
+        Tenantex.migrate_tenant(@repo, @tenant_id, :down, to: @migration_version)
 
       assert status == :ok
       assert prefix == "tenant_#{@tenant_id}"
@@ -55,7 +56,7 @@ defmodule Apartmentex.TenantActionsTest do
 
     force_rollback_failure fn(expected_postgres_error) ->
       {status, prefix, error_message} =
-        Apartmentex.migrate_tenant(@repo, @tenant_id, :down, to: @migration_version)
+        Tenantex.migrate_tenant(@repo, @tenant_id, :down, to: @migration_version)
 
       assert status == :error
       assert prefix == "tenant_#{@tenant_id}"
@@ -86,15 +87,18 @@ defmodule Apartmentex.TenantActionsTest do
   end
 
   defp create_and_migrate_tenant do
-    Apartmentex.new_tenant(@repo, @tenant_id)
+    Tenantex.new_tenant(@repo, @tenant_id)
   end
 
   defp create_tenant_schema do
-    Apartmentex.TenantActions.create_schema(@repo, @tenant_id)
+    Tenantex.TenantActions.create_schema(@repo, @tenant_id)
   end
 
   defp find_tenant_notes do
-    Apartmentex.all(@repo, Note, @tenant_id)
+    Note
+    |> set_tenant(@tenant_id)
+    |> @repo.all
+    # Tenantex.all(@repo, Note, @tenant_id)
   end
 
   defp force_migration_failure(migration_function) do

@@ -1,4 +1,4 @@
-defmodule Apartmentex.Note do
+defmodule Tenantex.Note do
   use Ecto.Schema
   import Ecto.Changeset
 

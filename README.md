@@ -1,6 +1,9 @@
-[![CircleCI](https://circleci.com/gh/Dania02525/apartmentex/tree/master.svg?style=shield)](https://circleci.com/gh/Dania02525/apartmentex/tree/master)
+[![CircleCI](https://circleci.com/gh/jeffdeville/tenantex/tree/master.svg?style=shield)](https://circleci.com/gh/jeffdeville/tenantex/tree/master)
 
-# Apartmentex
+# Tenantex
+
+Tenantex is a fork of https://github.com/Dania02525/apartmentex
+There was some fantastic work done there, but I wanted to take a slightly different approach.
 
 Easy SaaS for Phoenix/Ecto.
 
@@ -13,19 +16,17 @@ In this branch, the following versions are supported:
 * Automatic migrations for tenant tables to schema for Postgres or
 database for MySQL
 
-See an example app at https://github.com/Dania02525/widget_saas
-
 ### Setup
 
 - Add this to your mix.exs deps:
 ```elixir
-{:apartmentex, "~> 0.2.0"}
+{:tenantex, "~> 0.1.0"}
 ```
 - Run mix deps.get && mix deps.compile
 
 - You can also configure your tenant schema prefix, adding this to your application configs:
 ```elixir
-config :apartmentex, schema_prefix: "prefix_" # the default prefix is "tenant_"
+config :tenantex, schema_prefix: "prefix_" # the default prefix is "tenant_"
 ```
 
 ### Use
@@ -33,7 +34,7 @@ config :apartmentex, schema_prefix: "prefix_" # the default prefix is "tenant_"
 Generate a migration file that will be run against each tenant:
 
 ```
-mix apartmentex.gen.migration CreateUsers
+mix tenantex.gen.migration CreateUsers
 ```
 
 By default, the migration will be generated to the
@@ -49,7 +50,7 @@ Table references and indexes in a migration will be applied to the same tenant
 prefix as the table within tenant_migrations.
 
 ```elixir
-Apartmentex.new_tenant(Repo, tenant)
+Tenantex.new_tenant(Repo, tenant)
 ```
 
 When you need to update a tenant's schema based on new migrations, you can run:
@@ -61,7 +62,7 @@ When you need to update a tenant's schema based on new migrations, you can run:
 # {:ok, prefix_of_tenant, versions_migrated}
 # {:error, prefix_of_tenant, db_error_message}
 
-{status, prefix, versions_or_error} = Apartmentex.migrate_tenant(Repo, tenant)
+{status, prefix, versions_or_error} = Tenantex.migrate_tenant(Repo, tenant)
 ```
 
 If there is a problem with a migration, you can roll it back by passing in the
@@ -73,28 +74,15 @@ specified (including that version):
 # {:ok, prefix_of_tenant, versions_rolled_back}
 # {:error, prefix_of_tenant, db_error_message}
 
-{status, prefix, versions_or_error} = Apartmentex.migrate_tenant(Repo, tenant, :down, to: 20160711125401)
+{status, prefix, versions_or_error} = Tenantex.migrate_tenant(Repo, tenant, :down, to: 20160711125401)
 ```
 
 When deleting a tenant, you can also automatically drop their associated schema or database (for MySQL).
 
 ```elixir
-Apartmentex.drop_tenant(Repo, tenant)
+Tenantex.drop_tenant(Repo, tenant)
 ```
 
-Include the tenant struct or tenant id in Apartmentex calls for queries, inserts, updates, and deletes.
-
-```elixir
-
-  widgets = Apartmentex.all(Repo, Widget, tenant)
-
-  Apartmentex.insert(Repo, changeset, tenant)
-
-  Apartmentex.update(Repo, changeset, tenant_id)
-
-  Apartmentex.delete!(Repo, widget, tenant_id)
-
-```
 
 ### To Do
 

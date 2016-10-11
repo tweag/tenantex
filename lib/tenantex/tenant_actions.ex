@@ -1,6 +1,6 @@
-defmodule Apartmentex.TenantActions do
-  import Apartmentex.MigrationsPathBuilder
-  import Apartmentex.PrefixBuilder
+defmodule Tenantex.TenantActions do
+  import Tenantex.MigrationsPathBuilder
+  import Tenantex.Queryable
 
   @doc """
   Apply migrations to a tenant with given strategy, in given direction.
@@ -32,7 +32,7 @@ defmodule Apartmentex.TenantActions do
   end
 
   def create_schema(repo, tenant) do
-    prefix = build_prefix(tenant)
+    prefix = Tenantex.Queryable._build_prefix(tenant)
     case repo.__adapter__ do
       Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "CREATE SCHEMA \"#{prefix}\"", [])
       Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "CREATE DATABASE #{prefix}", [])
@@ -40,7 +40,7 @@ defmodule Apartmentex.TenantActions do
   end
 
   def drop_tenant(repo, tenant) do
-    prefix = build_prefix(tenant)
+    prefix = Tenantex.Queryable._build_prefix(tenant)
     case repo.__adapter__ do
       Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "DROP SCHEMA #{prefix} CASCADE", [])
       Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "DROP DATABASE #{prefix}", [])
@@ -48,7 +48,7 @@ defmodule Apartmentex.TenantActions do
   end
 
   defp migrate_and_return_status(repo, tenant, direction, opts) do
-    prefix = build_prefix(tenant)
+    prefix = Tenantex.Queryable._build_prefix(tenant)
 
     {status, versions} = handle_database_exceptions fn ->
       opts_with_prefix = Keyword.put(opts, :prefix, prefix)

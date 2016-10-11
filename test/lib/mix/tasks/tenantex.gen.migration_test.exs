@@ -1,10 +1,10 @@
-defmodule Mix.Tasks.Apartmentex.Gen.MigrationTest do
+defmodule Mix.Tasks.Tenantex.Gen.MigrationTest do
   use ExUnit.Case, async: true
 
   import Support.FileHelpers
-  import Mix.Tasks.Apartmentex.Gen.Migration, only: [run: 1]
+  import Mix.Tasks.Tenantex.Gen.Migration, only: [run: 1]
 
-  tmp_path = Path.join(tmp_path(), inspect(Apartmentex.Gen.Migration))
+  tmp_path = Path.join(tmp_path(), inspect(Tenantex.Gen.Migration))
   @migrations_path Path.join(tmp_path, "tenant_migrations")
 
   defmodule Repo do
@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Apartmentex.Gen.MigrationTest do
     end
 
     def config do
-      [priv: "tmp/#{inspect(Apartmentex.Gen.Migration)}", otp_app: :apartmentex]
+      [priv: "tmp/#{inspect(Tenantex.Gen.Migration)}", otp_app: :tenantex]
     end
   end
 
@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Apartmentex.Gen.MigrationTest do
     assert [name] = File.ls!(@migrations_path)
     assert String.match? name, ~r/^\d{14}_my_migration\.exs$/
     assert_file Path.join(@migrations_path, name), fn file ->
-      assert file =~ "defmodule Mix.Tasks.Apartmentex.Gen.MigrationTest.Repo.TenantMigrations.MyMigration do"
+      assert file =~ "defmodule Mix.Tasks.Tenantex.Gen.MigrationTest.Repo.TenantMigrations.MyMigration do"
       assert file =~ "use Ecto.Migration"
       assert file =~ "def change do"
     end

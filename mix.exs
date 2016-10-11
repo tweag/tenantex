@@ -1,14 +1,14 @@
-defmodule Apartmentex.Mixfile do
+defmodule Tenantex.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :apartmentex,
+      app: :tenantex,
       version: "0.2.1",
       elixir: "~> 1.2-dev",
       description: "SaaS Library for Ecto applications using Postgres or Mysql",
       package: [
-        links: %{"Github" => "https://github.com/Dania02525/apartmentex"},
+        links: %{"Github" => "https://github.com/Dania02525/tenantex"},
         maintainers: ["Dania Simmons"],
         licenses: ["MIT"]
       ],

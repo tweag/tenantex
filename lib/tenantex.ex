@@ -1,8 +1,16 @@
-defmodule Apartmentex.Repo do
+defmodule Tenantex do
+  defmodule TenantMissingError do
+    defexception message: "No tenant specified"
+  end
+
+  defdelegate drop_tenant(repo, tenant), to: Tenantex.TenantActions
+  defdelegate migrate_tenant(repo, tenant, direction \\ :up, opts \\ []), to: Tenantex.TenantActions
+  defdelegate new_tenant(repo, tenant), to: Tenantex.TenantActions
+
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       @behaviour Ecto.Repo
-      alias Apartmentex.TenantMissingError
+      alias Tenantex.TenantMissingError
 
       @repo Keyword.fetch!(opts, :repo)
       @untenanted [Ecto.Migration.SchemaMigration] ++ Keyword.get(opts, :untenanted, [])
@@ -172,4 +180,5 @@ defmodule Apartmentex.Repo do
       defp has_prefix?(%{prefix: _}), do: true
     end
   end
+
 end
