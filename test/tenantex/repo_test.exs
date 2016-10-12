@@ -1,12 +1,4 @@
-defmodule Tenantex.Test.UntenantedRepo do
-  use Tenantex, repo: Ecto.TestRepo, untenanted: [Tenantex.Note]
-end
-
-defmodule Tenantex.Test.TenantedRepo do
-  use Tenantex, repo: Ecto.TestRepo
-end
-
-defmodule Tenantex.TenantexTest do
+defmodule Tenantex.RepoTest do
   use ExUnit.Case
   import Tenantex.Queryable
   alias Tenantex.{Note,TenantMissingError}

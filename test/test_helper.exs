@@ -1,12 +1,5 @@
-defmodule Tenantex.TestPostgresRepo do
-  use Ecto.Repo, otp_app: :tenantex, adapter: Ecto.Adapters.Postgres, pool: Ecto.Adapters.SQL.Sandbox
-end
-
-defmodule Tenantex.TestTenantRepo do
-  use Tenantex, repo: Tenantex.TestPostgresRepo
-end
-
 Code.compiler_options(ignore_module_conflict: true)
+Code.require_file "test/support/repos.ex"
 
 Mix.Task.run "ecto.drop", ["quiet", "-r", "Tenantex.TestTenantRepo"]
 Mix.Task.run "ecto.create", ["quiet", "-r", "Tenantex.TestTenantRepo"]
