@@ -1,6 +1,6 @@
-defmodule Tenantex.TenantActions do
-  import Tenantex.MigrationsPathBuilder
-  import Tenantex.Queryable
+defmodule Tenantex.Migrator do
+  import Mix.Ecto, only: [build_repo_priv: 1]
+  import Tenantex.Prefix
 
   @doc """
   Apply migrations to a tenant with given strategy, in given direction.
@@ -26,32 +26,16 @@ defmodule Tenantex.TenantActions do
     migrate_and_return_status(repo, tenant, direction, opts)
   end
 
-  def new_tenant(repo, tenant) do
-    create_schema(repo, tenant)
-    migrate_tenant(repo, tenant)
-  end
 
-  def create_schema(repo, tenant) do
-    prefix = Tenantex.Queryable._build_prefix(tenant)
-    case repo.__adapter__ do
-      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "CREATE SCHEMA \"#{prefix}\"", [])
-      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "CREATE DATABASE #{prefix}", [])
-    end
-  end
-
-  def drop_tenant(repo, tenant) do
-    prefix = Tenantex.Queryable._build_prefix(tenant)
-    case repo.__adapter__ do
-      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "DROP SCHEMA #{prefix} CASCADE", [])
-      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "DROP DATABASE #{prefix}", [])
-    end
+  def tenant_migrations_path(repo) do
+    Path.join(build_repo_priv(repo), "tenant_migrations")
   end
 
   defp migrate_and_return_status(repo, tenant, direction, opts) do
-    prefix = Tenantex.Queryable._build_prefix(tenant)
+    schema = schema_name(tenant)
 
     {status, versions} = handle_database_exceptions fn ->
-      opts_with_prefix = Keyword.put(opts, :prefix, prefix)
+      opts_with_prefix = Keyword.put(opts, :prefix, schema)
       Ecto.Migrator.run(
         repo,
         tenant_migrations_path(repo),
@@ -60,7 +44,7 @@ defmodule Tenantex.TenantActions do
       )
     end
 
-    {status, prefix, versions}
+    {status, schema, versions}
   end
 
   defp handle_database_exceptions(fun) do
