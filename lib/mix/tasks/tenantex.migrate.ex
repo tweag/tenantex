@@ -2,8 +2,6 @@ defmodule Mix.Tasks.Tenantex.Migrate do
   use Mix.Task
   import Application, only: [get_env: 2]
   import Tenantex.Migrator
-  # import Tenantex.MigrationsPathBuilder
-  # import Tenantex.TenantActions
 
   @shortdoc "Migrates every tenant defined in your load_tenants config"
 
