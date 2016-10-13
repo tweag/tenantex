@@ -22,11 +22,14 @@ defmodule Mix.Tasks.Tenantex.Migrate do
 
   """
   def run(args) do
+    Mix.Task.run "loadpaths", []
     repo = get_env :tenantex, :repo
 
-    direction = Keyword.get(args, :direction, :up)
+    Mix.Ecto.ensure_repo(repo, [])
+    Mix.Ecto.ensure_started(repo, [])
 
-    tenants = Tenantex.load_tenants
+    direction = Keyword.get(args, :direction, :up)
+    tenants = Tenantex.list_tenants
     tenants |> Enum.map(fn(tenant) -> migrate_tenant(repo, tenant, direction, args) end)
   end
 
