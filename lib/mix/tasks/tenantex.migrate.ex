@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Tenantex.Migrate do
 
     direction = Keyword.get(args, :direction, :up)
 
-    tenants = get_env(:tenantex, :load_tenants) |> get_tenants
+    tenants = Tenantex.load_tenants
     tenants |> Enum.map(fn(tenant) -> migrate_tenant(repo, tenant, direction, args) end)
   end
 

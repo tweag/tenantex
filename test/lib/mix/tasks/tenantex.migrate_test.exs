@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Tenantex.MigrateTest do
   # Verify the tables are there
   # Check the version migrated to.
   test "migrate up" do
-    tenants = Application.get_env :tenantex, :load_tenants
+    tenants = Tenantex.load_tenants
     Enum.each(tenants, fn(tenant) -> create_tenant_schema(tenant) end)
 
     responses = run([])
