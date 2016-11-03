@@ -1,3 +1,4 @@
+# There's only 1 string that differentiates this entire file from the Ecto equivalent. Line 9
 defmodule Mix.Tasks.Tenantex.Gen.MigrationTest do
   use ExUnit.Case, async: true
 
@@ -5,7 +6,7 @@ defmodule Mix.Tasks.Tenantex.Gen.MigrationTest do
   import Mix.Tasks.Tenantex.Gen.Migration, only: [run: 1]
 
   tmp_path = Path.join(tmp_path(), inspect(Tenantex.Gen.Migration))
-  @migrations_path Path.join(tmp_path, "tenant_migrations")
+  @migrations_path Path.join(tmp_path, "tenant_migrations") # only difference is tenant_migrations vs migrations
 
   defmodule Repo do
     def __adapter__ do

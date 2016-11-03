@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Tenantex.Gen.Migration do
   import Macro, only: [camelize: 1, underscore: 1]
   import Mix.Generator
   import Mix.Ecto
-  import Tenantex.Migrator
+  import Mix.Tenantex
 
   @shortdoc "Generates a new migration for the tenants"
 
