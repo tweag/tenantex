@@ -1,6 +1,7 @@
 defmodule Tenantex.Repo do
   alias Tenantex.Migrator
   import Tenantex.Prefix
+  import Mix.Tenantex
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
@@ -178,14 +179,14 @@ defmodule Tenantex.Repo do
 
   def new_tenant(repo, tenant) do
     create_schema(repo, tenant)
-    Migrator.migrate_tenant(repo, tenant)
+    Ecto.Migrator.run(repo, tenant_migrations_path(repo), :up, [prefix: schema_name(tenant), all: true])
   end
 
   def create_schema(repo, tenant) do
     schema = schema_name(tenant)
 
     case repo.__adapter__ do
-      Ecto.Adapters.Postgres -> resp = Ecto.Adapters.SQL.query(repo, "CREATE SCHEMA \"#{schema}\"", [])
+      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "CREATE SCHEMA \"#{schema}\"", [])
       Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "CREATE DATABASE #{schema}", [])
     end
   end

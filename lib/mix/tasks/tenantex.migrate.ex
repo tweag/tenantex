@@ -1,14 +1,13 @@
 defmodule Mix.Tasks.Tenantex.Migrate do
   use Mix.Task
-  import Application, only: [get_env: 2]
-  import Tenantex.Migrator
-
+  import Mix.Tenantex
+  import Tenantex.Prefix
   @shortdoc "Migrates every tenant defined in your load_tenants config"
 
   @moduledoc """
   Migrates all of the tenants
 
-  Notes: You must have the load_tenants and repo config options set.
+  Notes: You must have the 'tenants' config option set.
 
   Any arguments you specify will be passed along directly to Ecto's migrate command,
   so they're all fair game as well.  That said, prefix (--prefix) and repo (-r/--repo)
@@ -19,24 +18,24 @@ defmodule Mix.Tasks.Tenantex.Migrate do
       mix tenantex.migrate
 
   """
-  def run(args) do
+
+  def run(args, migrator \\ &Mix.Tasks.Tenantex.Migrate.migrate_with_prefix/2) do
+    # Because migrations are loaded at run-time for each migration, warnings
+    # about duplicate module definitions will happen for each tenant after the first
+    # one. This silences that warning
+    Code.compiler_options(ignore_module_conflict: true)
+
     Mix.Task.run "loadpaths", []
-    repo = get_env :tenantex, :repo
-
-    Mix.Ecto.ensure_repo(repo, [])
-    Mix.Ecto.ensure_started(repo, [])
-
-    direction = Keyword.get(args, :direction, :up)
-    tenants = Tenantex.list_tenants
-    tenants |> Enum.map(fn(tenant) -> migrate_tenant(repo, tenant, direction, args) end)
+    Tenantex.list_tenants
+    |> Enum.map(&schema_name(&1))
+    |> Enum.each(&migrator.(args, &1))
   end
 
-  def pry(input) do
-    require IEx; IEx.pry
-    input
+  def migrate_with_prefix(args, prefix) do
+    Mix.Tasks.Ecto.Migrate.run(Keyword.merge(args, ["--prefix", prefix]), &ecto_migrator/4)
   end
 
-  def get_tenants(tenants) when is_list(tenants), do: tenants
-  def get_tenants(tenant_loader) when is_function(tenant_loader), do: tenant_loader.()
-  def get_tenants(_), do: raise ArgumentError
+  defp ecto_migrator(repo, _, direction, opts) do
+    Ecto.Migrator.run(repo, tenant_migrations_path(repo), direction, opts)
+  end
 end
