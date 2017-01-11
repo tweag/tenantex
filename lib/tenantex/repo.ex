@@ -28,37 +28,37 @@ defmodule Tenantex.Repo do
       defdelegate __sql__, to: @repo
 
       def all(queryable, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.all(queryable, opts)
       end
 
       def get(queryable, id, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.get(queryable, id, opts)
       end
 
       def get!(queryable, id, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.get!(queryable, id, opts)
       end
 
       def get_by(queryable, clauses, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.get_by(queryable, clauses, opts)
       end
 
       def get_by!(queryable, clauses, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.get_by!(queryable, clauses, opts)
       end
 
       def one(queryable, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.one(queryable, opts)
       end
 
       def one!(queryable, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.one!(queryable, opts)
       end
 
@@ -66,7 +66,9 @@ defmodule Tenantex.Repo do
       For insert_all
         - For tenanted tables
             - Your first parameter must be a tuple with the prefix, and the table name
-        - For non-tenanted tables
+            - OR
+            - pass in the 'prefix' value in 'opts'
+        - **Note**
             - Your first parameter may not be the string name of the table, because we can't
               check the associated model to see if it requires a tenant.
       """
@@ -80,81 +82,80 @@ defmodule Tenantex.Repo do
 
       def insert_all({_prefix, _source} = schema_or_source, entries, opts), do: @repo.insert_all(schema_or_source, entries, opts)
       def insert_all(schema_or_source, entries, opts) when is_binary(schema_or_source), do: raise TenantMissingError, message: @insert_all_error
+      def insert_all(schema_or_source, entries, [prefix: prefix] = opts) when is_atom(schema_or_source) and not is_nil(prefix) do
+        @repo.insert_all(schema_or_source, entries, opts)
+      end
       def insert_all(schema_or_source, entries, opts) when is_atom(schema_or_source) do
         if requires_tenant?(schema_or_source) do
           raise TenantMissingError, message: @insert_all_error
         end
-        @repo.insert_all(schema_or_source, entries, opts)
-      end
 
-      def insert_all(schema_or_source, entries, opts) do
-        if requires_tenant?(schema_or_source) do
-          raise TenantMissingError, message: @insert_all_error
-        end
         @repo.insert_all(schema_or_source, entries, opts)
       end
 
       def update_all(queryable, updates, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.update_all(queryable, updates, opts)
       end
 
       def delete_all(queryable, opts \\ []) do
-        assert_tenant(queryable)
+        assert_tenant(queryable, opts)
         @repo.delete_all(queryable, opts)
       end
 
       def insert(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.insert(struct, opts)
       end
 
       def update(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.update(struct, opts)
       end
 
       def insert_or_update(changeset, opts \\ []) do
-        assert_tenant(changeset)
+        assert_tenant(changeset, opts)
         @repo.insert_or_update(changeset, opts)
       end
 
       def delete(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.delete(struct, opts)
       end
 
       def insert!(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.insert!(struct, opts)
       end
 
       def update!(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.update!(struct, opts)
       end
 
       def insert_or_update!(changeset, opts \\ []) do
-        assert_tenant(changeset)
+        assert_tenant(changeset, opts)
         @repo.insert_or_update!(changeset, opts)
       end
 
       def delete!(struct, opts \\ []) do
-        assert_tenant(struct)
+        assert_tenant(struct, opts)
         @repo.delete!(struct, opts)
       end
 
-      defp assert_tenant(%Ecto.Changeset{} = changeset) do
-        assert_tenant(changeset.data)
+      defp assert_tenant(_, [prefix: prefix]) when not is_nil(prefix), do: nil
+
+      defp assert_tenant(%Ecto.Changeset{} = changeset, opts) do
+        assert_tenant(changeset.data, opts)
       end
 
-      defp assert_tenant(%{__meta__: _} = model) do
+      defp assert_tenant(%{__meta__: _} = model, _) do
         if requires_tenant?(model) && !has_prefix?(model) do
           raise TenantMissingError, message: "No tenant specified in #{model.__struct__}"
         end
       end
 
-      defp assert_tenant(queryable) do
+      defp assert_tenant(queryable, _) do
         query = Ecto.Queryable.to_query(queryable)
         if requires_tenant?(query) && !has_prefix?(query) do
           raise TenantMissingError, message: "No tenant specified in #{get_model_from_query(query)}"

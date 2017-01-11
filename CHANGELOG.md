@@ -7,7 +7,9 @@ complete changelog, see the git history for each version via the version links.
 
 [hex package page]: https://hex.pm/packages/apartmentex
 
-## [Since 0.2.0]
+## [0.3.0]
+
+- Upgrade Ecto et al. to ~> 2.1
 
 ### Changed
 

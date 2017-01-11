@@ -26,6 +26,7 @@ defmodule Tenantex.RepoTest do
       TenantedRepo.all(Note, [])
     end
     assert TenantedRepo.all(scoped_note_query, []) == [1]
+    assert TenantedRepo.all(Note, [prefix: "test"]) == [1]
     assert UntenantedRepo.all(Note, []) == [1]
   end
 
@@ -35,6 +36,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.get(scoped_note_query, 1) == 1
+    assert TenantedRepo.get(Note, 1, [prefix: "test"]) == 1
     assert UntenantedRepo.get(Note, 1) == 1
   end
 
@@ -44,6 +46,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.get(scoped_note_query, 1) == 1
+    assert TenantedRepo.get(Note, 1, [prefix: "test"]) == 1
     assert UntenantedRepo.get(Note, 1) == 1
   end
 
@@ -53,6 +56,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.get_by(scoped_note_query, body: "immaterial") == 1
+    assert TenantedRepo.get_by(Note, [body: "immaterial"], [prefix: "test"]) == 1
     assert UntenantedRepo.get_by(Note, body: "immaterial") == 1
   end
 
@@ -62,6 +66,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.get_by!(scoped_note_query, body: "immaterial") == 1
+    assert TenantedRepo.get_by!(Note, [body: "immaterial"], [prefix: "test"]) == 1
     assert UntenantedRepo.get_by!(Note, body: "immaterial") == 1
   end
 
@@ -71,6 +76,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.one(scoped_note_query) == 1
+    assert TenantedRepo.one(Note, [prefix: "test"]) == 1
     assert UntenantedRepo.one(Note) == 1
   end
 
@@ -80,6 +86,7 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.one!(scoped_note_query) == 1
+    assert TenantedRepo.one!(Note, prefix: "test") == 1
     assert UntenantedRepo.one!(Note) == 1
   end
 
@@ -97,9 +104,16 @@ defmodule Tenantex.RepoTest do
       TenantedRepo.insert_all({nil, Note}, [%Note{body: "body0"}])
     end
 
+    assert_raise TenantMissingError, ~r/For insert_all/, fn ->
+      TenantedRepo.insert_all(:note, [%Note{body: "body0"}])
+    end
+
 
     assert TenantedRepo.insert_all({@tenant_id, "notes"}, [%{body: "body"}]) == {1, nil}
     assert TenantedRepo.insert_all({@tenant_id, Note}, [%{body: "body"}]) == {1, nil}
+
+    assert TenantedRepo.insert_all(Note, [%{body: "body0"}], [prefix: "test"]) == {1, nil}
+
     assert UntenantedRepo.insert_all(Note, [%{body: "body0"}]) == {1, nil}
   end
 
@@ -109,6 +123,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.update_all(scoped_note_query, set: [body: "new"])
+    assert TenantedRepo.update_all(Note, [set: [body: "new"]], [prefix: "test"]) == {1, nil}
+
     assert UntenantedRepo.update_all(Note, set: [body: "new"]) == {1, nil}
   end
 
@@ -118,6 +134,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.delete_all(scoped_note_query) == {1, nil}
+    assert TenantedRepo.delete_all(Note, [prefix: "test"]) == {1, nil}
+
     assert UntenantedRepo.delete_all(Note) == {1, nil}
   end
 
@@ -131,6 +149,8 @@ defmodule Tenantex.RepoTest do
 
     assert {:ok, _} = TenantedRepo.insert(scoped_note)
     assert {:ok, _} = TenantedRepo.insert(Note.changeset(scoped_note, %{}))
+    assert {:ok, _} = TenantedRepo.insert(%Note{}, [prefix: "test"])
+
     assert {:ok, _} = UntenantedRepo.insert(%Note{})
   end
 
@@ -140,6 +160,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.update(scoped_changeset)
+    assert TenantedRepo.update(Note.changeset(%Note{id: 1}, %{body: "body"}), [prefix: "test"])
+
     assert UntenantedRepo.update(Note.changeset(%Note{id: 1}, %{body: "body"}))
   end
 
@@ -149,6 +171,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert {:ok, _} = TenantedRepo.insert_or_update(scoped_changeset)
+    assert {:ok, _} = TenantedRepo.insert_or_update(Note.changeset(%Note{id: 1}, %{body: "body"}), [prefix: "test"])
+
     assert {:ok, _} = UntenantedRepo.insert_or_update(Note.changeset(%Note{id: 1}, %{body: "body"}))
   end
 
@@ -162,6 +186,8 @@ defmodule Tenantex.RepoTest do
 
     assert {:ok, _} = TenantedRepo.delete(scoped_note)
     assert {:ok, _} = TenantedRepo.delete(scoped_changeset)
+    assert {:ok, _} = TenantedRepo.delete(%Note{id: 1}, [prefix: "test"])
+
     assert {:ok, _} = UntenantedRepo.delete(%Note{id: 1})
   end
 
@@ -175,6 +201,8 @@ defmodule Tenantex.RepoTest do
 
     assert TenantedRepo.insert!(scoped_note)
     assert TenantedRepo.insert!(Note.changeset(scoped_note, %{}))
+    assert TenantedRepo.insert!(%Note{}, [prefix: "test"])
+
     assert UntenantedRepo.insert!(%Note{})
   end
 
@@ -184,6 +212,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.update!(scoped_changeset)
+    assert TenantedRepo.update!(Note.changeset(%Note{id: 1}, %{body: "body"}), [prefix: "test"])
+
     assert UntenantedRepo.update!(Note.changeset(%Note{id: 1}, %{body: "body"}))
   end
 
@@ -193,6 +223,8 @@ defmodule Tenantex.RepoTest do
     end
 
     assert TenantedRepo.insert_or_update!(scoped_changeset)
+    assert TenantedRepo.insert_or_update!(Note.changeset(%Note{id: 1}, %{body: "body"}), [prefix: "test"])
+
     assert UntenantedRepo.insert_or_update!(Note.changeset(%Note{id: 1}, %{body: "body"}))
   end
 
@@ -206,6 +238,8 @@ defmodule Tenantex.RepoTest do
 
     assert TenantedRepo.delete!(scoped_note)
     assert TenantedRepo.delete!(scoped_changeset)
+    assert TenantedRepo.delete!(%Note{id: 1}, [prefix: "test"])
+
     assert UntenantedRepo.delete!(%Note{id: 1})
   end
 end
