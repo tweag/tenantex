@@ -15,9 +15,7 @@ defmodule Support.MigrationHelpers do
   end
 
   def find_tenant_notes(tenant) do
-    Note
-    |> set_tenant(tenant)
-    |> TestTenantRepo.all
+    TestTenantRepo.all(Note, prefix: tenant)
   end
 
   def create_and_migrate_tenant(tenant) do

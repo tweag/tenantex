@@ -90,6 +90,27 @@ defmodule Tenantex.RepoTest do
     assert UntenantedRepo.one!(Note) == 1
   end
 
+  test ".preload(struct_or_structs, preloads, opts \\ [])" do
+    assert_raise TenantMissingError, @error_message, fn ->
+      TenantedRepo.preload(%Note{}, :tags)
+    end
+
+    note = Ecto.put_meta(%Note{}, prefix: "tenant_test")
+    assert TenantedRepo.preload(note, :tags)
+    assert TenantedRepo.preload([note], :tags)
+    assert UntenantedRepo.preload(%Note{}, :tags)
+  end
+
+  test ".aggregate(queryable, aggregate, field, opts \\ [])" do
+    assert_raise TenantMissingError, @error_message, fn ->
+      TenantedRepo.aggregate(Note, :avg, :body)
+    end
+
+    assert TenantedRepo.aggregate(scoped_note_query, :avg, :body) == 1
+    assert TenantedRepo.aggregate(Note, :avg, :body, prefix: "test") == 1
+    assert UntenantedRepo.aggregate(Note, :avg, :body) == 1
+  end
+
   test ".insert_all(schema_or_source, entries, opts \\ []) verifies tenant existence" do
     assert_raise TenantMissingError, ~r/For insert_all/, fn ->
       TenantedRepo.insert_all(Note, [%Note{body: "body0"}])

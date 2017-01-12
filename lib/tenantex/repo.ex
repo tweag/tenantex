@@ -1,5 +1,4 @@
 defmodule Tenantex.Repo do
-  alias Tenantex.Migrator
   import Tenantex.Prefix
   import Mix.Tenantex
 
@@ -20,8 +19,6 @@ defmodule Tenantex.Repo do
       defdelegate transaction(fun_or_multi, opts \\ []), to: @repo
       defdelegate in_transaction?(), to: @repo
       defdelegate rollback(value), to: @repo
-      defdelegate aggregate(queryable, aggregate, field, opts \\ []), to: @repo
-      defdelegate preload(struct_or_structs, preloads, opts \\ []), to: @repo
 
       # From Ecto.Adapters.SQL
       defdelegate __pool__, to: @repo
@@ -60,6 +57,16 @@ defmodule Tenantex.Repo do
       def one!(queryable, opts \\ []) do
         assert_tenant(queryable, opts)
         @repo.one!(queryable, coerce_prefix(opts))
+      end
+
+      def preload(struct_or_structs, preloads, opts \\ []) do
+        assert_tenant(struct_or_structs, opts)
+        @repo.preload(struct_or_structs, preloads, coerce_prefix(opts))
+      end
+
+      def aggregate(queryable, aggregate, field, opts \\ []) do
+        assert_tenant(queryable, opts)
+        @repo.aggregate(queryable, aggregate, field, coerce_prefix(opts))
       end
 
       @insert_all_error """
@@ -144,16 +151,16 @@ defmodule Tenantex.Repo do
       end
 
       defp assert_tenant(_, [prefix: prefix]) when not is_nil(prefix), do: nil
-
       defp assert_tenant(%Ecto.Changeset{} = changeset, opts) do
         assert_tenant(changeset.data, opts)
       end
-
       defp assert_tenant(%{__meta__: _} = model, _) do
         if requires_tenant?(model) && !has_prefix?(model) do
           raise TenantMissingError, message: "No tenant specified in #{model.__struct__}"
         end
       end
+      defp assert_tenant([], _), do: nil
+      defp assert_tenant([ %{__meta__: _} = model| _tail], opts), do: assert_tenant(model, opts)
 
       defp assert_tenant(queryable, _) do
         query = Ecto.Queryable.to_query(queryable)
