@@ -1,6 +1,5 @@
 defmodule Support.MigrationHelpers do
   import ExUnit.Assertions
-  import Tenantex.Queryable
   alias Tenantex.Note
   alias Tenantex.TestTenantRepo
 

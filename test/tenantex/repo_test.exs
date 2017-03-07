@@ -30,6 +30,15 @@ defmodule Tenantex.RepoTest do
     assert UntenantedRepo.all(Note, []) == [1]
   end
 
+  test ".stream/2 verifies tenant existence" do
+    assert_raise TenantMissingError, @error_message, fn ->
+      TenantedRepo.stream(Note, [])
+    end
+    assert TenantedRepo.stream(scoped_note_query(), []) |> Enum.to_list == [1]
+    assert TenantedRepo.stream(Note, [prefix: "test"]) |> Enum.to_list == [1]
+    assert UntenantedRepo.stream(Note, []) |> Enum.to_list == [1]
+  end
+
   test ".get/2 verifies tenant existence" do
     assert_raise TenantMissingError, @error_message, fn ->
       TenantedRepo.get(Note, 1)

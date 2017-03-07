@@ -19,6 +19,7 @@ defmodule Tenantex.Repo do
       defdelegate transaction(fun_or_multi, opts \\ []), to: @repo
       defdelegate in_transaction?(), to: @repo
       defdelegate rollback(value), to: @repo
+      defdelegate load(schema_or_types, data), to: @repo
 
       # From Ecto.Adapters.SQL
       defdelegate __pool__, to: @repo
@@ -27,6 +28,11 @@ defmodule Tenantex.Repo do
       def all(queryable, opts \\ []) do
         assert_tenant(queryable, opts)
         @repo.all(queryable, coerce_prefix(opts))
+      end
+
+      def stream(queryable, opts \\ []) do
+        assert_tenant(queryable, opts)
+        @repo.stream(queryable, coerce_prefix(opts))
       end
 
       def get(queryable, id, opts \\ []) do
