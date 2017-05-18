@@ -32,7 +32,7 @@ defmodule Mix.Tasks.Tenantex.Migrate do
   end
 
   def migrate_with_prefix(args, prefix) do
-    Mix.Tasks.Ecto.Migrate.run(Keyword.merge(args, ["--prefix", prefix]), &ecto_migrator/4)
+    Mix.Tasks.Ecto.Migrate.run(args ++ ["--prefix", prefix], &ecto_migrator/4)
   end
 
   defp ecto_migrator(repo, _, direction, opts) do

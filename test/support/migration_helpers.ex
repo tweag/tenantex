@@ -1,6 +1,5 @@
 defmodule Support.MigrationHelpers do
   import ExUnit.Assertions
-  import Tenantex.Queryable
   alias Tenantex.Note
   alias Tenantex.TestTenantRepo
 
@@ -15,9 +14,7 @@ defmodule Support.MigrationHelpers do
   end
 
   def find_tenant_notes(tenant) do
-    Note
-    |> set_tenant(tenant)
-    |> TestTenantRepo.all
+    TestTenantRepo.all(Note, prefix: tenant)
   end
 
   def create_and_migrate_tenant(tenant) do
