@@ -199,8 +199,6 @@ defmodule Tenantex.Repo do
 
   def new_tenant(tenant) do
     create_schema(tenant)
-    Code.compiler_options(ignore_module_conflict: true)
-
     Ecto.Migrator.run(get_repo(), tenant_migrations_path(get_repo()), :up, [prefix: schema_name(tenant), all: true])
   end
 
