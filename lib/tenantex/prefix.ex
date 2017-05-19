@@ -4,7 +4,7 @@ defmodule Tenantex.Prefix do
   def schema_name(tenant) when is_binary(tenant), do: get_prefix() <> tenant
 
   def schema_name(nil), do: raise ArgumentError, "Tenant can not be nil"
-  defp get_prefix() do
+  def get_prefix() do
     Application.get_env(:tenantex, Tenantex)[:schema_prefix] || "tenant_"
   end
 end
