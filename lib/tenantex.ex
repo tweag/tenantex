@@ -45,11 +45,7 @@ defmodule Tenantex do
 
   def get_repo_adapter do
     get_appname()
-    |> Application.get_env(
-      get_appname()
-      |> Application.get_env(:ecto_repos)
-      |> List.first()
-    )
+    |> Application.get_env(get_repo())
     |> Keyword.fetch!(:adapter)
   end
 end
