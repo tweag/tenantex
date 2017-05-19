@@ -1,4 +1,5 @@
 defmodule Tenantex.Repo do
+  import Application, only: [get_env: 2]
   import Tenantex.Prefix
   import Mix.Tenantex
 
@@ -196,25 +197,65 @@ defmodule Tenantex.Repo do
     end
   end
 
-  def new_tenant(repo, tenant) do
-    create_schema(repo, tenant)
-    Ecto.Migrator.run(repo, tenant_migrations_path(repo), :up, [prefix: schema_name(tenant), all: true])
+  def new_tenant(tenant) do
+    create_schema(tenant)
+    Code.compiler_options(ignore_module_conflict: true)
+
+    Ecto.Migrator.run(get_repo(), tenant_migrations_path(get_repo()), :up, [prefix: schema_name(tenant), all: true])
   end
 
-  def create_schema(repo, tenant) do
+  def create_schema(tenant) do
     schema = schema_name(tenant)
-
-    case repo.__adapter__ do
-      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "CREATE SCHEMA \"#{schema}\"", [])
-      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "CREATE DATABASE #{schema}", [])
+    case get_repo().__adapter__ do
+      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(get_repo(), "CREATE SCHEMA \"#{schema}\"", [])
+      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(get_repo(), "CREATE DATABASE #{schema}", [])
     end
   end
 
-  def drop_tenant(repo, tenant) do
+  def drop_tenant(tenant) do
     schema = schema_name(tenant)
-    case repo.__adapter__ do
-      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(repo, "DROP SCHEMA #{schema} CASCADE", [])
-      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(repo, "DROP DATABASE #{schema}", [])
+    case get_repo().__adapter__ do
+      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(get_repo(), "DROP SCHEMA #{schema} CASCADE", [])
+      Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(get_repo(), "DROP DATABASE #{schema}", [])
     end
   end
+
+  def list_tenants do
+    statement = case get_repo().__adapter__ do
+      Ecto.Adapters.Postgres ->
+        "SELECT schema_name FROM information_schema.schemata"
+      Ecto.Adapters.MySQL ->
+        "SHOW DATABASES LIKE '" <> get_prefix() <> "%'"
+      Ecto.Adapters.SQL ->
+        ""
+    end
+    get_repo()
+    |> Ecto.Adapters.SQL.query!(statement)
+    |> Map.fetch!(:rows)
+    |> Enum.flat_map(&(&1))
+    |> Enum.filter(&(String.starts_with?(&1, get_prefix())))
+  end
+
+  defp tenant_exists(tenant) do
+
+  end
+
+  defp get_repo do
+    case get_env(:tenantex, Tenantex)[:repo] do
+      nil -> default_repo()
+      repo -> repo
+    end
+  end
+  
+  defp get_appname do
+    Mix.Project.config()
+    |> Keyword.fetch!(:app)
+  end
+
+  defp default_repo do
+    get_appname()
+    |> get_env(:ecto_repos)
+    |> List.first()    
+  end
+
 end
