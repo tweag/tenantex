@@ -1,13 +1,10 @@
 defmodule Mix.Tasks.Tenantex.Migrate do
   use Mix.Task
   import Mix.Tenantex
-  import Tenantex.Prefix
-  @shortdoc "Migrates every tenant defined in your load_tenants config"
+  @shortdoc "Migrates every tenant defined in your database"
 
   @moduledoc """
   Migrates all of the tenants
-
-  Notes: You must have the 'tenants' config option set.
 
   Any arguments you specify will be passed along directly to Ecto's migrate command,
   so they're all fair game as well.  That said, prefix (--prefix) and repo (-r/--repo)

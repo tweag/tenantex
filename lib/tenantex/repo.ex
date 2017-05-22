@@ -234,17 +234,13 @@ defmodule Tenantex.Repo do
     |> Enum.filter(&(String.starts_with?(&1, get_prefix())))
   end
 
-  defp tenant_exists(tenant) do
-
-  end
-
   defp get_repo do
     case get_env(:tenantex, Tenantex)[:repo] do
       nil -> default_repo()
       repo -> repo
     end
   end
-  
+
   defp get_appname do
     Mix.Project.config()
     |> Keyword.fetch!(:app)
@@ -253,7 +249,6 @@ defmodule Tenantex.Repo do
   defp default_repo do
     get_appname()
     |> get_env(:ecto_repos)
-    |> List.first()    
+    |> List.first()
   end
-
 end
