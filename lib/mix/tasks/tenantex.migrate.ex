@@ -1,13 +1,10 @@
 defmodule Mix.Tasks.Tenantex.Migrate do
   use Mix.Task
   import Mix.Tenantex
-  import Tenantex.Prefix
-  @shortdoc "Migrates every tenant defined in your load_tenants config"
+  @shortdoc "Migrates every tenant defined in your database"
 
   @moduledoc """
   Migrates all of the tenants
-
-  Notes: You must have the 'tenants' config option set.
 
   Any arguments you specify will be passed along directly to Ecto's migrate command,
   so they're all fair game as well.  That said, prefix (--prefix) and repo (-r/--repo)
@@ -27,12 +24,11 @@ defmodule Mix.Tasks.Tenantex.Migrate do
 
     Mix.Task.run "loadpaths", []
     Tenantex.list_tenants
-    |> Enum.map(&schema_name(&1))
     |> Enum.each(&migrator.(args, &1))
   end
 
   def migrate_with_prefix(args, prefix) do
-    Mix.Tasks.Ecto.Migrate.run(Keyword.merge(args, ["--prefix", prefix]), &ecto_migrator/4)
+    Mix.Tasks.Ecto.Migrate.run(args ++ ["--prefix", prefix], &ecto_migrator/4)
   end
 
   defp ecto_migrator(repo, _, direction, opts) do

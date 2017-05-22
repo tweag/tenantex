@@ -4,18 +4,18 @@ defmodule Tenantex.Mixfile do
   def project do
     [
       app: :tenantex,
-      version: "0.2.1",
-      elixir: "~> 1.2-dev",
-      description: "SaaS Library for Ecto applications using Postgres or Mysql",
+      version: "0.3.0",
+      elixir: "~> 1.3",
+      description: "Utilities to help with using ecto in a multi-tenant environment",
       package: [
-        links: %{"Github" => "https://github.com/Dania02525/tenantex"},
-        maintainers: ["Dania Simmons"],
+        links: %{"Github" => "https://github.com/promptworks/tenantex"},
+        maintainers: ["Jeff Deville"],
         licenses: ["MIT"]
       ],
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       elixirc_paths: elixirc_paths(Mix.env),
-      deps: deps
+      deps: deps()
     ]
   end
 
@@ -37,14 +37,14 @@ defmodule Tenantex.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:ecto, "~> 2.0.2"},
-      {:mariaex, "~> 0.7.7", optional: true},
-      {:postgrex, "~> 0.11.0", optional: true},
+      {:ecto, "~> 2.1"},
+      {:mariaex, "~> 0.8.0", optional: true},
+      {:postgrex, "~> 0.13.0", optional: true},
       {:mix_test_watch, "~> 0.2", only: :dev},
     ]
   end
 
-  defp elixirc_paths(:test), do: elixirc_paths ++ ["test/support"]
-  defp elixirc_paths(_), do: elixirc_paths
+  defp elixirc_paths(:test), do: elixirc_paths() ++ ["test/support"]
+  defp elixirc_paths(_), do: elixirc_paths()
   defp elixirc_paths, do: ["lib"]
 end
