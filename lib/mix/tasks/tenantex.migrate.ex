@@ -27,7 +27,6 @@ defmodule Mix.Tasks.Tenantex.Migrate do
 
     Mix.Task.run "loadpaths", []
     Tenantex.list_tenants
-    |> Enum.map(&schema_name(&1))
     |> Enum.each(&migrator.(args, &1))
   end
 
