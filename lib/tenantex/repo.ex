@@ -213,7 +213,7 @@ defmodule Tenantex.Repo do
   def drop_tenant(tenant) do
     schema = schema_name(tenant)
     case get_repo().__adapter__ do
-      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(get_repo(), "DROP SCHEMA #{schema} CASCADE", [])
+      Ecto.Adapters.Postgres -> Ecto.Adapters.SQL.query(get_repo(), "DROP SCHEMA \"#{schema}\" CASCADE", [])
       Ecto.Adapters.MySQL -> Ecto.Adapters.SQL.query(get_repo(), "DROP DATABASE #{schema}", [])
     end
   end
