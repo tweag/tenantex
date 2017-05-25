@@ -4,10 +4,11 @@ defmodule Tenantex.Note do
 
   schema "notes" do
     field :body, :string
+    has_many :tags, Tenantex.Tag
   end
 
   def changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(body), [])
+    |> cast(params, ~w(body))
   end
 end
