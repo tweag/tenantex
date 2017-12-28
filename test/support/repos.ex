@@ -13,3 +13,10 @@ end
 defmodule Tenantex.Test.TenantedRepo do
   use Tenantex.Repo, repo: Ecto.TestRepo
 end
+
+defmodule Tenantex.Test.ProcessTenantedRepo do
+  use Tenantex.Repo,
+      repo: Ecto.TestRepo,
+      process_prefix_key: "TENANTEX_PREFIX",
+      untenanted: [Tenantex.Tag]
+end
