@@ -22,11 +22,12 @@ database for MySQL
 ```elixir
 {:tenantex, "~> 0.1.0"}
 ```
-- Run mix deps.get && mix deps.compile
+- Run
+```mix deps.get && mix deps.compile```
 
 - You can also configure your tenant schema prefix, adding this to your application configs:
 ```elixir
-config :tenantex, schema_prefix: "prefix_" # the default prefix is "tenant_"
+config :tenantex, Tenantex, schema_prefix: "prefix_" # the default prefix is "tenant_"
 ```
 
 ### Use
