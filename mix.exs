@@ -39,7 +39,7 @@ defmodule Tenantex.Mixfile do
     [
       {:ecto, "~> 2.1"},
       {:mariaex, "~> 0.8.0", optional: true},
-      {:postgrex, "~> 0.13.0", optional: true},
+      {:postgrex, ">= 0.13.0", optional: true},
       {:mix_test_watch, "~> 0.2", only: :dev},
     ]
   end
